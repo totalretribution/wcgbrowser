@@ -128,7 +128,8 @@ class MainWindow(QMainWindow):
         self.screensaver_url = self.configuration.get("screensaver_url", "about:blank")
         self.screensaver_active = False
         self.whitelist = self.configuration.get("whitelist", False)
-        self.proxy_server = options.proxy_server or os.environ.get("http_proxy") or self.configuration.get("proxy_server")
+#        self.proxy_server = options.proxy_server or os.environ.get("http_proxy") or self.configuration.get("proxy_server")
+	self.proxy_server = self.configuration.get("proxy_server")
         self.popup = None
 
         # Stylesheet support
@@ -175,6 +176,9 @@ class MainWindow(QMainWindow):
         debug("build_ui")
         inactivity_timeout = options.timeout or int(configuration.get("timeout", 0))
         timeout_mode = configuration.get('timeout_mode', 'reset')
+
+	self.refresh_timer = int(configuration.get("refresh_timer", 0))
+
         self.icon_theme = options.icon_theme or configuration.get("icon_theme", None)
         self.zoomfactor = options.zoomfactor or float(configuration.get("zoom_factor") or 1.0)
         self.allow_popups = options.allow_popups or configuration.get("allow_popups", False)
@@ -345,6 +349,14 @@ class MainWindow(QMainWindow):
         else:
             self.event_filter = None
 
+        if self.refresh_timer != 0:
+            # Create a QTimer
+            self.timer = QTimer()
+            # Connect it to self.refresh_browser
+            self.timer.timeout.connect(self.refresh_browser)
+            # Call refresh_browser() every self.refresh_timer seconds
+            self.timer.start(self.refresh_timer*1000)
+
         ###END OF CONSTRUCTOR###
 
     def screensaver(self):
@@ -405,7 +417,10 @@ class MainWindow(QMainWindow):
         else:
             self.nav_items["zoom_out"].setEnabled(False)
 
-
+    def refresh_browser(self):
+        debug("Refreshing Browser")
+        self.browser_window.reload()
+        self.timer.start(self.refresh_timer*1000)  
 
 ### END Main Application Window Class def ###
 
