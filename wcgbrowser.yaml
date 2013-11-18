@@ -50,6 +50,13 @@ timeout: 1800
 
 timeout_mode: 'reset'
 
+# refresh_timer will refresh the browser window
+# after this number of seconds.
+# Set to 0 to disable this feature
+# Default: 0
+
+#refresh_timer: 10
+
 # "screensaver_url" defines the URL the browser should go to in screensaver mode
 # default is "about:blank"
 
